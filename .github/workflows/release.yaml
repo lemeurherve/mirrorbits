@@ -59,6 +59,7 @@ jobs:
           # HOMEBREW_TAP_GITHUB_TOKEN: ${{ steps.generate_homebrew_token.outputs.token }}
         run: |
           make rpc/rpc.pb.go
+          git add . && git commit -m "make rpc"
           goreleaser release
       # - name: Clean up
       #   run: |
