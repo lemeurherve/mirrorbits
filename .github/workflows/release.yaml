@@ -57,9 +57,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # HOMEBREW_TAP_GITHUB_TOKEN: ${{ steps.generate_homebrew_token.outputs.token }}
+          # make rpc/rpc.pb.go
+          # git add . && git commit -m "make rpc" --author="${{ env.GITHUB_ACTOR }} <${{ env.GITHUB_EMAIL }}>"
         run: |
-          make rpc/rpc.pb.go
-          git add . && git commit -m "make rpc" --author="${{ env.GITHUB_ACTOR }} <${{ env.GITHUB_EMAIL }}>"
           goreleaser release
       # - name: Clean up
       #   run: |
