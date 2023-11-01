@@ -1,0 +1,72 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+
+# The lines bellow are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+before:
+  hooks:
+    # - make rpc/rpc.pb.go
+    - go mod download
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+      - GO111MODULE=on
+      - GOVERSION=go1.21.3
+      - PACKAGE=github.com/etix/mirrorbits
+      - VERSION={{ .Tag }}
+      - BUILD={{ .ShortCommit }}-{{ .Branch }}
+      - TEMPLATES=templates/
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -X "{{.Env.PACKAGE}}/core.VERSION={{.Env.VERSION}}"
+      - -X "{{ .Env.PACKAGE }}/core.BUILD={{ .Env.BUILD }}"
+      - -X "{{ .Env.PACKAGE }}/config.TEMPLATES_PATH={{ .Env.TEMPLATES }}"
+    # hooks:
+    #   pre:
+    #     - make rpc/rpc.pb.go
+    # Set the modified timestamp on the output binary, typically
+    # you would do this to ensure a build was reproducible. Pass
+    # empty string to skip modifying the output.
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - format: tar.gz
+    # this name template makes the OS and Arch compatible with the results of `uname`.
+    name_template: >-
+      {{ .ProjectName }}_
+      {{- title .Os }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "386" }}i386
+      {{- else }}{{ .Arch }}{{ end }}
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - templates/*
+      - mirrorbits.conf
+      - README.md
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+# dockers:
+#   - image_templates:
+#       - etix/mirrorbits
+
+sboms:
+  - artifacts: archive
