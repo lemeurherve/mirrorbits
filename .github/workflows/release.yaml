@@ -58,7 +58,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # HOMEBREW_TAP_GITHUB_TOKEN: ${{ steps.generate_homebrew_token.outputs.token }}
         run: |
-          make release
+          make rpc/rpc.pb.go
+          goreleaser release
       # - name: Clean up
       #   run: |
       #     rm -f ${HOME}/.docker/config.json
